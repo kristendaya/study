@@ -19,7 +19,7 @@ print(train_csv.shape) #(1459,10)
 
 #헤더와 인덱스는 따로 연산하지 않는다.
 
-test_csv = pd.read_csv(path +"train.csv",
+test_csv = pd.read_csv(path +"test.csv",
                         index_col= 0 )
 
 print(test_csv)
@@ -63,7 +63,34 @@ model=Sequential()
 model.add(Dense(1, input_dim=9))
 
 model.compile(loss="mse",optimizer="adam")
-model.fit(x_train,y_train,epochs=50, batch_size=4)
+model.fit(x_train,y_train,epochs=38, batch_size=18)
 
 loss=model.evaluate(x_test,y_test)
-print("loss:",loss)
+print("loss:",loss) #mse
+
+y_predict=model.predict(x_test)
+
+r2= r2_score(y_test,y_predict)
+print('r2스코어:',r2)
+
+def RMSE(y_test,y_predict): #RMSE라는 함수를 정의할거야 
+   return np.sqrt(mean_squared_error(y_test,y_predict))
+rmse=RMSE(y_test,y_predict) #사용
+print("RMSE:",rmse) 
+
+
+# r2스코어: 0.4716778665447394
+# RMSE: 3456.822507919298
+
+print(test_csv.shape)
+##submission csv를 만들어봅시다.###
+# print(test_csv.isnull().sum())
+y_submit= model.predict(test_csv)
+# print(y_submit.shape)
+
+submission= pd.read_csv(path+ "submission.csv",index_col=0)
+# print(submission)
+submission["count"]=y_submit
+# print(submission)
+
+submission.to_csv(path+"sub_0306_0544.csv")
